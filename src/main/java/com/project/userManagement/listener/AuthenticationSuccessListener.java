@@ -13,10 +13,10 @@ public class AuthenticationSuccessListener {
     private LoginAttempt loginAttempt;
 
     @EventListener
-    public void onAuthenticationSuccess(AuthenticationSuccessEvent event){
+    public void onAuthenticationSuccess(AuthenticationSuccessEvent event) {
         Object principal = event.getAuthentication().getPrincipal();
-        if(principal instanceof UserPrincipal){
-            UserPrincipal user =(UserPrincipal) event.getAuthentication().getPrincipal();
+        if (principal instanceof UserPrincipal) {
+            UserPrincipal user = (UserPrincipal) event.getAuthentication().getPrincipal();
             loginAttempt.evictUserFromLoginAttemptCache(user.getUsername());
         }
     }

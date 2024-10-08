@@ -20,13 +20,12 @@ public class EmailService {
         this.emailSender = emailSender;
     }
 
-    public void sendNewPasswordEmail(String firstName, String username,String password, String email) {
+    public void sendNewPasswordEmail(String firstName, String username, String password, String email) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
         message.setSubject(EMAIL_SUBJECT);
-        message.setText("Hello " + firstName + "!\n\nYour new account password is: " + password + "\n\nFor the username: "+username+"\n\nThe Support Team");
+        message.setText("Hello " + firstName + "!\n\nYour new account password is: " + password + "\n\nFor the username: " + username + "\n\nThe Support Team");
         message.setFrom("v3@demomailtrap.com");
         emailSender.send(message);
     }
-
 }

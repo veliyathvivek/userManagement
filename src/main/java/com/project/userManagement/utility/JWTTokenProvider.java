@@ -73,7 +73,7 @@ public class JWTTokenProvider {
         try {
             Algorithm algorithm = HMAC512(secret);
             verifier = JWT.require(algorithm).withIssuer(GET_ARRAYS_LLC).build();
-        }catch (JWTVerificationException exception) {
+        } catch (JWTVerificationException exception) {
             throw new JWTVerificationException(TOKEN_CANNOT_BE_VERIFIED);
         }
         return verifier;
@@ -81,7 +81,7 @@ public class JWTTokenProvider {
 
     private String[] getClaimsFromUser(UserPrincipal user) {
         List<String> authorities = new ArrayList<>();
-        for (GrantedAuthority grantedAuthority : user.getAuthorities()){
+        for (GrantedAuthority grantedAuthority : user.getAuthorities()) {
             authorities.add(grantedAuthority.getAuthority());
         }
         return authorities.toArray(new String[0]);

@@ -19,7 +19,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.OK;
 
 @Component
-public class JwtAuthorizationFilter extends OncePerRequestFilter{
+public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JWTTokenProvider jwtTokenProvider;
 

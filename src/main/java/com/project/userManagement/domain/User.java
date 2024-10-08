@@ -13,36 +13,36 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
     private Long id;
-    @Column(name="user_id")
+    @Column(name = "user_id")
     private String userId;
-    @Column(name="firstname")
+    @Column(name = "firstname")
     private String firstName;
-    @Column(name="lastname")
+    @Column(name = "lastname")
     private String lastName;
-    @Column(name="username")
+    @Column(name = "username")
     private String username;
-    @Column(name="password")
+    @Column(name = "password")
     private String password;
-    @Column(name="email")
+    @Column(name = "email")
     private String email;
-    @Column(name="profile_img_url")
+    @Column(name = "profile_img_url")
     private String profileImageUrl;
-    @Column(name="last_login_date")
+    @Column(name = "last_login_date")
     private Date lastLoginDate;
-    @Column(name="last_login_date_display")
+    @Column(name = "last_login_date_display")
     private Date lastLoginDateDisplay;
-    @Column(name="join_date")
+    @Column(name = "join_date")
     private Date joinDate;
-    @Column(name="roles")
+    @Column(name = "roles")
     private String role;
-    @Column(name="authorities")
+    @Column(name = "authorities")
     private String[] authorities;
-    @Column(name="is_active")
+    @Column(name = "is_active")
     private boolean isActive;
-    @Column(name="is_not_locked")
+    @Column(name = "is_not_locked")
     private boolean isNotLocked;
 
-    public User(){
+    public User() {
 
     }
 

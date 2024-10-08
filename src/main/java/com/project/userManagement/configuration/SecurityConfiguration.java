@@ -49,28 +49,28 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
-                .sessionManagement((sessionManagement)-> sessionManagement
+                .sessionManagement((sessionManagement) -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests((request)-> request
+                .authorizeHttpRequests((request) -> request
                         .requestMatchers(SecurityConstant.PUBLIC_URLS).permitAll())
-                .authorizeHttpRequests((request)-> request
-                        .requestMatchers("/user/find/**","/user/findAll/**").hasAuthority("user:read"))
-                .authorizeHttpRequests((request)-> request
-                        .requestMatchers("/user/updateUser/**","/user/updateProfileImg/**").hasAuthority("user:update"))
-                .authorizeHttpRequests((request)-> request
+                .authorizeHttpRequests((request) -> request
+                        .requestMatchers("/user/find/**", "/user/findAll/**").hasAuthority("user:read"))
+                .authorizeHttpRequests((request) -> request
+                        .requestMatchers("/user/updateUser/**", "/user/updateProfileImg/**").hasAuthority("user:update"))
+                .authorizeHttpRequests((request) -> request
                         .requestMatchers("/user/addNewUser/**").hasAuthority("user:create"))
-                .authorizeHttpRequests((request)-> request
+                .authorizeHttpRequests((request) -> request
                         .requestMatchers("/user/delete/**").hasAuthority("user:delete"))
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling((exceptionHandling)-> exceptionHandling
+                .exceptionHandling((exceptionHandling) -> exceptionHandling
                         .accessDeniedHandler(jwtAccessDeniedHandler))
-                .httpBasic((basic)-> basic
+                .httpBasic((basic) -> basic
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint));
         return http.build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
