@@ -4,7 +4,6 @@ package com.project.userManagement.exceptions;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.project.userManagement.domain.HttpResponse;
 import jakarta.mail.AuthenticationFailedException;
-import jakarta.mail.SendFailedException;
 import jakarta.persistence.NoResultException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
