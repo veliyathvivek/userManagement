@@ -16,13 +16,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.util.Arrays;
-
-import static com.project.userManagement.constants.Authority.USER_AUTHORITIES;
-import static com.project.userManagement.eunms.Role.ROLE_USER;
 
 @Configuration
 @EnableWebSecurity
