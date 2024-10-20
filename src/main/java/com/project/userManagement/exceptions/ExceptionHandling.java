@@ -11,6 +11,7 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailSendException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -89,6 +90,11 @@ public class ExceptionHandling implements ErrorController {
 
     @ExceptionHandler(AuthenticationFailedException.class)
     public ResponseEntity<HttpResponse> emailNotSend() {
+        return createHttpResponse(INTERNAL_SERVER_ERROR, "Email was not sent");
+    }
+
+    @ExceptionHandler(MailSendException.class)
+    public ResponseEntity<HttpResponse> emailNotSend2() {
         return createHttpResponse(INTERNAL_SERVER_ERROR, "Email was not sent");
     }
 
