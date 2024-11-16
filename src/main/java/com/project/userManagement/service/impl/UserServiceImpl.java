@@ -78,26 +78,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private User validateNewUsernameAndEmail(String newUsername, String newEmail) throws UserNotFoundException, UsernameExistException, EmailExistException {
         User existUserSameUsername = findUserByUsername(newUsername);
         User existUserSameEmail = findUserByEmail(newEmail);
+
         if (StringUtils.isNotBlank(newUsername)) {
-//            User currentUser = findUserByUsername(newUsername);
-//            if(currentUser == null) {
-//                throw new UserNotFoundException(NO_USER_FOUND_BY_USERNAME + StringUtils.EMPTY);
-//            }
-            if (existUserSameUsername != null) {
-                throw new UsernameExistException(USERNAME_ALREADY_EXISTS);
-            } else if (existUserSameEmail != null && existUserSameEmail.getUsername() == newUsername) {
-                throw new EmailExistException(EMAIL_ALREADY_EXISTS);
-            } else return existUserSameUsername;
-        } else {
-            if (existUserSameUsername == null) {
-                throw new UserNotFoundException(NO_USER_FOUND_BY_USERNAME + StringUtils.EMPTY);
-            } else if (existUserSameUsername != null) {
-                throw new UsernameExistException(USERNAME_ALREADY_EXISTS);
-            } else if (existUserSameEmail != null) {
-                throw new EmailExistException(EMAIL_ALREADY_EXISTS);
-            } else return null;
+            if (existUserSameUsername != null) throw new UsernameExistException(USERNAME_ALREADY_EXISTS);
+            if (existUserSameEmail != null && !existUserSameEmail.getUsername().equals(newUsername)) throw new EmailExistException(EMAIL_ALREADY_EXISTS);
+            return existUserSameUsername;
         }
+
+        if (existUserSameUsername == null) throw new UserNotFoundException(NO_USER_FOUND_BY_USERNAME);
+        if (existUserSameEmail != null) throw new EmailExistException(EMAIL_ALREADY_EXISTS);
+
+        return null;
     }
+
+
 
     @Override
     public User register(String firstName, String lastName, String username, String email) throws UserNotFoundException, EmailExistException, UsernameExistException, MessagingException {
