@@ -31,11 +31,9 @@ public class ExceptionHandling implements ErrorController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandling.class);
     private static final String ERROR_PATH = "/error";
 
-    private static final String ACCOUNT_LOCKED_MSG = "Your account has been locked. Please contact administration";
     private static final String METHOD_NOT_ALLOWED_MSG = "This request method is not allowed on this endpoint. Please send a '%s' request";
     private static final String INTERNAL_SERVER_ERROR_MSG = "An error occurred while processing the request";
     private static final String INCORRECT_CREDENTIALS_MSG = "Username/password incorrect. Please try again";
-    private static final String ACCOUNT_DISABLED_MSG = "Your account has been disabled. Please contact administration";
     private static final String ERROR_PROCESSING_FILE_MSG = "Error occurred while processing file";
     private static final String NOT_ENOUGH_PERMISSION_MSG = "You do not have enough permission";
     private static final String NO_MAPPING_URL_MSG = "There is no mapping for this URL";
@@ -46,10 +44,6 @@ public class ExceptionHandling implements ErrorController {
         return new ResponseEntity<>(new HttpResponse(status.value(), status, status.getReasonPhrase().toUpperCase(), formattedMessage), status);
     }
 
-    @ExceptionHandler(DisabledException.class)
-    public ResponseEntity<HttpResponse> accountDisabledException() {
-        return createExceptionResponse(BAD_REQUEST, ACCOUNT_DISABLED_MSG);
-    }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<HttpResponse> badCredentialsException() {
@@ -61,14 +55,9 @@ public class ExceptionHandling implements ErrorController {
         return createExceptionResponse(FORBIDDEN, NOT_ENOUGH_PERMISSION_MSG);
     }
 
-    @ExceptionHandler(AccountLockedException.class)
-    public ResponseEntity<HttpResponse> lockedException() {
-        return createExceptionResponse(UNAUTHORIZED, ACCOUNT_LOCKED_MSG);
-    }
-
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<HttpResponse> tokenExpiredException(TokenExpiredException exception) {
-        return createExceptionResponse(UNAUTHORIZED, exception.getMessage());
+        return createExceptionResponse(FORBIDDEN, exception.getMessage());
     }
 
     // Grouped user-related exceptions in one handler

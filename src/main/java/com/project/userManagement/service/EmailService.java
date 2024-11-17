@@ -24,8 +24,8 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
         message.setSubject(EMAIL_SUBJECT);
-        message.setText("Hello " + firstName + "!\n\nYour new account password is: " + password + "\n\nFor the username: " + username + "\n\nThe Support Team");
-        message.setFrom("v3@demomailtrap.com");
+        message.setText("Hello " + firstName + "!\n\nYour new password is: " + password + "\n\nFor the username: " + username + "\n\nThe Support Team");
+        message.setFrom("veliyathvivek@gmail.com");
         emailSender.send(message);
     }
 }

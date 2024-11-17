@@ -17,10 +17,12 @@ public class LoginAttempt {
 
     public LoginAttempt() {
         super();
-        loginAttemptCache = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.MINUTES)
-                .maximumSize(100).build(new CacheLoader<String, Integer>() {
+        loginAttemptCache = CacheBuilder.newBuilder()
+                .expireAfterWrite(15, TimeUnit.MINUTES)
+                .maximumSize(100)
+                .build(new CacheLoader<String, Integer>() {
                     @Override
-                    public Integer load(String key) throws Exception {
+                    public Integer load(String key){
                         return 0;
                     }
                 });
@@ -31,21 +33,19 @@ public class LoginAttempt {
     }
 
     public void addUserToLoginAttemptCache(String username) {
-        int attempts = 0;
         try {
-            attempts = ATTEMPT_INCREMENT + loginAttemptCache.get(username);
+            int attempts= ATTEMPT_INCREMENT+loginAttemptCache.get(username);
+            loginAttemptCache.put(username,attempts);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        loginAttemptCache.put(username, attempts);
     }
 
     public boolean hasExceededAttempts(String username) {
         try {
             return loginAttemptCache.get(username) >= MAXIMUM_NUMBER_OF_ATTEMPTS;
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return false;
     }
 }
