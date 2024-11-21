@@ -2,107 +2,89 @@ package com.project.userManagement.exceptions;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.project.userManagement.domain.HttpResponse;
-import jakarta.mail.AuthenticationFailedException;
 import jakarta.persistence.NoResultException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.servlet.error.ErrorController;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.mail.MailSendException;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import javax.security.auth.login.AccountLockedException;
 import java.io.IOException;
 import java.rmi.ServerException;
 import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.*;
 
-public class ExceptionHandling implements ErrorController {
+@ControllerAdvice
+public class ExceptionHandling {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandling.class);
-    private static final String ERROR_PATH = "/error";
-
-    private static final String METHOD_NOT_ALLOWED_MSG = "This request method is not allowed on this endpoint. Please send a '%s' request";
-    private static final String INTERNAL_SERVER_ERROR_MSG = "An error occurred while processing the request";
-    private static final String INCORRECT_CREDENTIALS_MSG = "Username/password incorrect. Please try again";
-    private static final String ERROR_PROCESSING_FILE_MSG = "Error occurred while processing file";
-    private static final String NOT_ENOUGH_PERMISSION_MSG = "You do not have enough permission";
-    private static final String NO_MAPPING_URL_MSG = "There is no mapping for this URL";
 
     // Generalized method for common exception response
     private ResponseEntity<HttpResponse> createExceptionResponse(HttpStatus status, String message) {
         String formattedMessage = message.toUpperCase();
-        return new ResponseEntity<>(new HttpResponse(status.value(), status, status.getReasonPhrase().toUpperCase(), formattedMessage), status);
-    }
-
-
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<HttpResponse> badCredentialsException() {
-        return createExceptionResponse(BAD_REQUEST, INCORRECT_CREDENTIALS_MSG);
+        return new ResponseEntity<>(
+                new HttpResponse(
+                        status.value(), status, formattedMessage), status);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<HttpResponse> accessDeniedException() {
-        return createExceptionResponse(FORBIDDEN, NOT_ENOUGH_PERMISSION_MSG);
+    public ResponseEntity<HttpResponse> accessDeniedException(AccessDeniedException e) {
+        LOGGER.error(e.getMessage());
+        return createExceptionResponse(FORBIDDEN, e.getMessage());
     }
 
     @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<HttpResponse> tokenExpiredException(TokenExpiredException exception) {
-        return createExceptionResponse(FORBIDDEN, exception.getMessage());
+    public ResponseEntity<HttpResponse> tokenExpiredException(TokenExpiredException e) {
+        LOGGER.error(e.getMessage());
+        return createExceptionResponse(UNAUTHORIZED, e.getMessage());
     }
 
     // Grouped user-related exceptions in one handler
-    @ExceptionHandler({EmailExistException.class, UsernameExistException.class, EmailNotFoundException.class, UserNotFoundException.class})
-    public ResponseEntity<HttpResponse> handleUserExceptions(Exception exception) {
-        return createExceptionResponse(BAD_REQUEST, exception.getMessage());
+    @ExceptionHandler({
+            EmailExistException.class, UsernameExistException.class, EmailNotFoundException.class, UserNotFoundException.class})
+    public ResponseEntity<HttpResponse> handleUserExceptions(Exception e) {
+        LOGGER.error(e.getMessage());
+        return createExceptionResponse(BAD_REQUEST, e.getMessage());
     }
 
     // Grouped email-related exceptions
-    @ExceptionHandler({AuthenticationFailedException.class, MailSendException.class})
-    public ResponseEntity<HttpResponse> emailException() {
-        return createExceptionResponse(INTERNAL_SERVER_ERROR, "Email was not sent");
+    @ExceptionHandler( MailSendException.class)
+    public ResponseEntity<HttpResponse> emailException(MailSendException e) {
+        LOGGER.error(e.getMessage());
+        return createExceptionResponse(INTERNAL_SERVER_ERROR, Objects.requireNonNull(e.getMessage()));
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
-        HttpMethod supportedMethod = Objects.requireNonNull(exception.getSupportedHttpMethods()).iterator().next();
-        return createExceptionResponse(METHOD_NOT_ALLOWED, String.format(METHOD_NOT_ALLOWED_MSG, supportedMethod));
+    public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        LOGGER.error(e.getMessage());
+        HttpMethod supportedMethod = Objects.requireNonNull(e.getSupportedHttpMethods()).iterator().next();
+        return createExceptionResponse(METHOD_NOT_ALLOWED, String.format(e.getMessage(), supportedMethod));
     }
 
     @ExceptionHandler(ServerException.class)
-    public ResponseEntity<HttpResponse> internalServerErrorException(ServerException exception) {
-        LOGGER.error(exception.getMessage());
-        return createExceptionResponse(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
+    public ResponseEntity<HttpResponse> internalServerErrorException(ServerException e) {
+        LOGGER.error(e.getMessage());
+        return createExceptionResponse(INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
     @ExceptionHandler(NoResultException.class)
-    public ResponseEntity<HttpResponse> notFoundException(NoResultException exception) {
-        LOGGER.error(exception.getMessage());
-        return createExceptionResponse(NOT_FOUND, exception.getMessage());
+    public ResponseEntity<HttpResponse> notFoundException(NoResultException e) {
+        LOGGER.error(e.getMessage());
+        return createExceptionResponse(NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(IOException.class)
-    public ResponseEntity<HttpResponse> iOException(IOException exception) {
-        LOGGER.error(exception.getMessage());
-        return createExceptionResponse(INTERNAL_SERVER_ERROR, ERROR_PROCESSING_FILE_MSG);
+    public ResponseEntity<HttpResponse> iOException(IOException e) {
+        LOGGER.error(e.getMessage());
+        return createExceptionResponse(INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<HttpResponse> noHandlerFoundException() {
-        return createExceptionResponse(BAD_REQUEST, NO_MAPPING_URL_MSG);
-    }
-
-    @RequestMapping(ERROR_PATH)
-    public ResponseEntity<HttpResponse> notFound404() {
-        return createExceptionResponse(NOT_FOUND, NO_MAPPING_URL_MSG);
+    public ResponseEntity<HttpResponse>  handleNoHandlerFoundException(NoHandlerFoundException e) {
+        return createExceptionResponse(NOT_FOUND, "No URL is mapped");
     }
 }

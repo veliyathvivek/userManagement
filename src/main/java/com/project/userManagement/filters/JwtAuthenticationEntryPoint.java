@@ -8,26 +8,26 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static com.project.userManagement.constants.SecurityConstant.FORBIDDEN_MESSAGE;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @Component
-public class JwtAuthenticationEntryPoint extends Http403ForbiddenEntryPoint {
+public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException arg2) throws IOException {
-        HttpResponse httpResponse = new HttpResponse(FORBIDDEN.value(), FORBIDDEN, FORBIDDEN.getReasonPhrase().toUpperCase(), FORBIDDEN_MESSAGE);
+    public void commence(
+            HttpServletRequest request, HttpServletResponse response, AuthenticationException arg2) throws IOException {
+        HttpResponse httpResponse = new HttpResponse(UNAUTHORIZED.value(), UNAUTHORIZED, arg2.getMessage());
         response.setContentType(APPLICATION_JSON_VALUE);
-        response.setStatus(FORBIDDEN.value());
+        response.setStatus(UNAUTHORIZED.value());
         LOGGER.error(arg2.getMessage());
         OutputStream outputStream = response.getOutputStream();
         ObjectMapper mapper = new ObjectMapper();

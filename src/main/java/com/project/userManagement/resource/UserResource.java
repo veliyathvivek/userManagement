@@ -11,6 +11,7 @@ import com.project.userManagement.service.UserService;
 import com.project.userManagement.utility.JWTTokenProvider;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +30,12 @@ import java.util.List;
 
 import static com.project.userManagement.constants.FileConstant.*;
 import static com.project.userManagement.constants.SecurityConstant.*;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping(path = {"/", "/user"})
-public class UserResource extends ExceptionHandling {
+public class UserResource extends ExceptionHandling implements ErrorController {
+
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final JWTTokenProvider jwtTokenProvider;
@@ -140,9 +141,17 @@ public class UserResource extends ExceptionHandling {
         return outputStream.toByteArray();
     }
 
+    @GetMapping("/error")
+    public ResponseEntity<HttpResponse> foundNoHandler() {
+        return response(NOT_FOUND, "No mapping found for this URL ");
+    }
+
+    public String getErrorPath() {
+        return "/error";
+    }
 
     private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
-        return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(), message.toUpperCase()), httpStatus);
+        return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, message), httpStatus);
     }
 
     private HttpHeaders getJwtHeader(UserPrincipal user) {

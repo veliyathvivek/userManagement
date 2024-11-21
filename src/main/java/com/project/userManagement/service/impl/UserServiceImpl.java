@@ -179,6 +179,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
         String password = generatePassword();
         user.setPassword(encodePassword(password));
+        if(!user.isNotLocked()){
+            user.setNotLocked(true);
+        }
         userRepository.save(user);
         emailService.sendNewPasswordEmail(user.getFirstName(), user.getUsername(), password, user.getEmail());
     }

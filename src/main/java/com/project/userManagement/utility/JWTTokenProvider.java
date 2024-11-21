@@ -36,6 +36,14 @@ public class JWTTokenProvider {
                 .sign(HMAC512(secret.getBytes()));
     }
 
+    private String[] getClaimsFromUser(UserPrincipal user) {
+        List<String> authorities = new ArrayList<>();
+        for (GrantedAuthority grantedAuthority : user.getAuthorities()) {
+            authorities.add(grantedAuthority.getAuthority());
+        }
+        return authorities.toArray(new String[0]);
+    }
+
     public List<GrantedAuthority> getAuthorities(String token) {
         String[] claims = getClaimsFromToken(token);
         return stream(claims).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
@@ -77,13 +85,5 @@ public class JWTTokenProvider {
             throw new JWTVerificationException(TOKEN_CANNOT_BE_VERIFIED);
         }
         return verifier;
-    }
-
-    private String[] getClaimsFromUser(UserPrincipal user) {
-        List<String> authorities = new ArrayList<>();
-        for (GrantedAuthority grantedAuthority : user.getAuthorities()) {
-            authorities.add(grantedAuthority.getAuthority());
-        }
-        return authorities.toArray(new String[0]);
     }
 }
