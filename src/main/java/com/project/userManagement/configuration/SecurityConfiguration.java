@@ -29,13 +29,7 @@ public class SecurityConfiguration {
     private JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
-    @Autowired
-    private JWTTokenProvider jwtTokenProvider;
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -48,18 +42,20 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers(SecurityConstant.PUBLIC_URLS).permitAll())
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/user/find/**", "/user/findAll/**").hasAuthority("user:read"))
+                        .requestMatchers("/user/find", "/user/findAll").hasAuthority("user:read"))
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/user/updateUser/**", "/user/updateProfileImg/**").hasAuthority("user:update"))
+                        .requestMatchers("/user/updateUser", "/user/updateProfileImg").hasAuthority("user:update"))
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/user/addNewUser/**").hasAuthority("user:create"))
+                        .requestMatchers("/user/addNewUser").hasAuthority("user:create"))
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/user/delete/**").hasAuthority("user:delete"))
+                        .requestMatchers("/user/delete").hasAuthority("user:delete"))
+                .authorizeHttpRequests((request) -> request
+                        .requestMatchers("/user").authenticated())
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling((exceptionHandling) -> exceptionHandling
-                        .accessDeniedHandler(jwtAccessDeniedHandler))
-                .httpBasic((basic) -> basic
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint));
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .exceptionHandling((exceptionHandling) -> exceptionHandling
+                        .accessDeniedHandler(jwtAccessDeniedHandler));
         return http.build();
     }
 

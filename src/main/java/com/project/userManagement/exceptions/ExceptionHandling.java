@@ -10,7 +10,7 @@ import org.springframework.mail.MailSendException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.io.IOException;
 import java.rmi.ServerException;
@@ -25,10 +25,9 @@ public class ExceptionHandling {
 
     // Generalized method for common exception response
     private ResponseEntity<HttpResponse> createExceptionResponse(HttpStatus status, String message) {
-        String formattedMessage = message.toUpperCase();
         return new ResponseEntity<>(
                 new HttpResponse(
-                        status.value(), status, formattedMessage), status);
+                        status.value(), status, message), status);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -83,8 +82,8 @@ public class ExceptionHandling {
         return createExceptionResponse(INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<HttpResponse>  handleNoHandlerFoundException(NoHandlerFoundException e) {
-        return createExceptionResponse(NOT_FOUND, "No URL is mapped");
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<HttpResponse>  handleNoHandlerFoundException(NoResourceFoundException e) {
+        return createExceptionResponse(NOT_FOUND, e.getMessage());
     }
 }

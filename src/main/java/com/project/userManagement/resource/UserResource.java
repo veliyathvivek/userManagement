@@ -11,7 +11,6 @@ import com.project.userManagement.service.UserService;
 import com.project.userManagement.utility.JWTTokenProvider;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +32,8 @@ import static com.project.userManagement.constants.SecurityConstant.*;
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
-@RequestMapping(path = {"/", "/user"})
-public class UserResource extends ExceptionHandling implements ErrorController {
+@RequestMapping("/user")
+public class UserResource extends ExceptionHandling {
 
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
@@ -139,15 +138,6 @@ public class UserResource extends ExceptionHandling implements ErrorController {
             }
         }
         return outputStream.toByteArray();
-    }
-
-    @GetMapping("/error")
-    public ResponseEntity<HttpResponse> foundNoHandler() {
-        return response(NOT_FOUND, "No mapping found for this URL ");
-    }
-
-    public String getErrorPath() {
-        return "/error";
     }
 
     private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
