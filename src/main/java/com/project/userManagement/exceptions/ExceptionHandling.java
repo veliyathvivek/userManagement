@@ -10,7 +10,7 @@ import org.springframework.mail.MailSendException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.io.IOException;
 import java.rmi.ServerException;
@@ -18,17 +18,15 @@ import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.*;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class ExceptionHandling {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandling.class);
 
-    // Generalized method for common exception response
     private ResponseEntity<HttpResponse> createExceptionResponse(HttpStatus status, String message) {
-        String formattedMessage = message.toUpperCase();
         return new ResponseEntity<>(
                 new HttpResponse(
-                        status.value(), status, formattedMessage), status);
+                        status.value(), status, message), status);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -43,7 +41,6 @@ public class ExceptionHandling {
         return createExceptionResponse(UNAUTHORIZED, e.getMessage());
     }
 
-    // Grouped user-related exceptions in one handler
     @ExceptionHandler({
             EmailExistException.class, UsernameExistException.class, EmailNotFoundException.class, UserNotFoundException.class})
     public ResponseEntity<HttpResponse> handleUserExceptions(Exception e) {
@@ -51,8 +48,7 @@ public class ExceptionHandling {
         return createExceptionResponse(BAD_REQUEST, e.getMessage());
     }
 
-    // Grouped email-related exceptions
-    @ExceptionHandler( MailSendException.class)
+    @ExceptionHandler(MailSendException.class)
     public ResponseEntity<HttpResponse> emailException(MailSendException e) {
         LOGGER.error(e.getMessage());
         return createExceptionResponse(INTERNAL_SERVER_ERROR, Objects.requireNonNull(e.getMessage()));
@@ -83,8 +79,8 @@ public class ExceptionHandling {
         return createExceptionResponse(INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<HttpResponse>  handleNoHandlerFoundException(NoHandlerFoundException e) {
-        return createExceptionResponse(NOT_FOUND, "No URL is mapped");
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<HttpResponse> handleNoHandlerFoundException(NoResourceFoundException e) {
+        return createExceptionResponse(NOT_FOUND, e.getMessage());
     }
 }

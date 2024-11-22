@@ -22,7 +22,7 @@ public class LoginAttempt {
                 .maximumSize(100)
                 .build(new CacheLoader<String, Integer>() {
                     @Override
-                    public Integer load(String key){
+                    public Integer load(String key) {
                         return 0;
                     }
                 });
@@ -34,8 +34,8 @@ public class LoginAttempt {
 
     public void addUserToLoginAttemptCache(String username) {
         try {
-            int attempts= ATTEMPT_INCREMENT+loginAttemptCache.get(username);
-            loginAttemptCache.put(username,attempts);
+            int attempts = ATTEMPT_INCREMENT + loginAttemptCache.get(username);
+            loginAttemptCache.put(username, attempts);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }

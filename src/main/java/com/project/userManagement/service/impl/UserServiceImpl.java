@@ -59,7 +59,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
 
-
     @Override
     public User register(String firstName, String lastName, String username, String email) throws UserNotFoundException, EmailExistException, UsernameExistException, MessagingException {
         validateNewUsernameAndEmail(username, email);
@@ -80,7 +79,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
         userRepository.save(user);
         emailService.sendNewPasswordEmail(firstName, username, password, email);
-//        LOGGER.info("New user password: {}", password);
         return user;
     }
 
@@ -117,7 +115,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setAuthorities(getRoleEnum(role).getAuthorities());
         user.setProfileImageUrl(getTemporaryProfileImageUrl(username));
         userRepository.save(user);
-//        LOGGER.info("New user password: {}", password);
         saveProfileImage(user, profileImg);
         emailService.sendNewPasswordEmail(firstName, username, password, email);
         return user;
@@ -179,7 +176,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
         String password = generatePassword();
         user.setPassword(encodePassword(password));
-        if(!user.isNotLocked()){
+        if (!user.isNotLocked()) {
             user.setNotLocked(true);
         }
         userRepository.save(user);
@@ -215,7 +212,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         User existUserSameEmail = findUserByEmail(newEmail);
         if (StringUtils.isNotBlank(newUsername)) {
             if (existUserSameUsername != null) throw new UsernameExistException(USERNAME_ALREADY_EXISTS);
-            if (existUserSameEmail != null && !existUserSameEmail.getUsername().equals(newUsername)) throw new EmailExistException(EMAIL_ALREADY_EXISTS);
+            if (existUserSameEmail != null && !existUserSameEmail.getUsername().equals(newUsername))
+                throw new EmailExistException(EMAIL_ALREADY_EXISTS);
             return existUserSameUsername;
         }
         if (existUserSameUsername == null) throw new UserNotFoundException(NO_USER_FOUND_BY_USERNAME);
@@ -232,11 +230,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             }
         } else {
             loginAttempt.evictUserFromLoginAttemptCache(user.getUsername());
-//            try {
-//                throw new AccountLockedException();
-//            } catch (Exception e) {
-//                throw new RuntimeException(e);
-//            }
         }
     }
 

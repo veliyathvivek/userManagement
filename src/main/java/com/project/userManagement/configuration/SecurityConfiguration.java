@@ -4,7 +4,6 @@ import com.project.userManagement.constants.SecurityConstant;
 import com.project.userManagement.filters.JwtAccessDeniedHandler;
 import com.project.userManagement.filters.JwtAuthenticationEntryPoint;
 import com.project.userManagement.filters.JwtAuthorizationFilter;
-import com.project.userManagement.utility.JWTTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +13,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -29,13 +27,7 @@ public class SecurityConfiguration {
     private JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
-    @Autowired
-    private JWTTokenProvider jwtTokenProvider;
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -48,18 +40,20 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers(SecurityConstant.PUBLIC_URLS).permitAll())
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/user/find/**", "/user/findAll/**").hasAuthority("user:read"))
+                        .requestMatchers("/user/find/**", "/user/findAll/**", "/user/image/**").hasAuthority("user:read"))
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers("/user/updateUser/**", "/user/updateProfileImg/**").hasAuthority("user:update"))
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers("/user/addNewUser/**").hasAuthority("user:create"))
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers("/user/delete/**").hasAuthority("user:delete"))
+                .authorizeHttpRequests((request) -> request
+                        .requestMatchers("/**").permitAll())
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling((exceptionHandling) -> exceptionHandling
-                        .accessDeniedHandler(jwtAccessDeniedHandler))
-                .httpBasic((basic) -> basic
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint));
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .exceptionHandling((exceptionHandling) -> exceptionHandling
+                        .accessDeniedHandler(jwtAccessDeniedHandler));
         return http.build();
     }
 
